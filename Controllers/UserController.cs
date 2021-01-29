@@ -52,6 +52,8 @@ namespace SOATApiReact.Controllers
                 repository.CreateUser(commandModel);
                 repository.SaveChanges();
             }catch(DbUpdateException){
+                //Para este punto el Dto user ya debe tener todos los datos necesarios y validados con el modelo
+                //por lo que la única razón para un error es que haya conflicto con las llaves
                 return Conflict(new {errorMessage = "Error al tratar de crear el usuario, el documento ya existe"});
             }
             var userReadDto = mapper.Map<UserReadDto>(commandModel);

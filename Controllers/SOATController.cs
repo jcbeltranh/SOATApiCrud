@@ -53,6 +53,8 @@ namespace SOATApiReact.Controllers
                 repository.SaveChanges();
             }catch(DbUpdateException)
             {
+                //Para este punto el Dto user ya debe tener todos los datos necesarios y validados con el modelo
+                //por lo que la única razón para un error es que haya conflicto con las llaves
                 return Conflict(new {errorMessage = "Error al tratar de crear el SOAT, revise que el vehiculo y el usuario existen, y que no se repita la fecha para el mismo vehiculo"});
             }
             var soatReadDto = mapper.Map<SOATReadDto>(soatModel);

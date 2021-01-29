@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SOATApiReact.Data;
 using SOATApiReact.DTOs;
 using SOATApiReact.Model;
@@ -45,8 +46,14 @@ namespace SOATApiReact.Controllers
         public ActionResult<VehicleReadDto> CreateVehicle(VehicleCreateDto vehicleCreateDto)
         {
             var vehicleModel = mapper.Map<Vehicle>(vehicleCreateDto);
-            repository.CreateVehicle(vehicleModel);
-            repository.SaveChanges();
+            try{
+                repository.CreateVehicle(vehicleModel);
+                repository.SaveChanges();
+            }catch(DbUpdateException){
+                //Para este punto el Dto vehiculo ya debe tener todos los datos necesarios y validados con el modelo
+                //por lo que la única razón para un error es que haya conflicto con las llaves
+                return Conflict(new {errorMessage = "Error al tratar de crear el vehiculo, la placa ya existe"});
+            }
             var vehicleReadDto = mapper.Map<VehicleReadDto>(vehicleModel);
             return CreatedAtRoute(nameof(GetVehicleByPlate), new {Plate = vehicleReadDto.Plate}, vehicleReadDto);
         }
